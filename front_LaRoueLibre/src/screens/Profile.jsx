@@ -490,19 +490,19 @@ const Profile = () => {
                                     {filteredWishlist.map((item) => (
                                         <div key={item.id} className="bg-black/40 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-xl">
                                             <div className="flex flex-col gap-3">
-                                                {/* Affichage des données brutes de la wishlist */}
-                                                <h3 className="text-xl font-bold text-white">{item.placeName || "Produit sans nom"}</h3>
+                                                {/* Affichage des données de la wishlist */}
+                                                <h3 className="text-xl font-bold text-white">{item.productName || item.placeName || "Élément sans nom"}</h3>
                                                 
                                                 <div className="flex justify-between items-center mt-2">
                                                     <span className="text-orange font-medium">
-                                                        {item.placeDifficulty ? `Difficulté : ${item.placeDifficulty}` : "Favori"}
+                                                        {item.placeDifficulty ? `Difficulté : ${item.placeDifficulty}` : (item.productPrice ? `${item.productPrice / 100} €` : "Favori")}
                                                     </span>
                                                     <span className="text-gray-400 text-xs">Ajouté le {item.createdAt}</span>
                                                 </div>
                                                 
                                                 {/* Lien vers le détail si nécessaire, utilisant l'id de la wishlist ou du produit lié */}
                                                 <Link 
-                                                    to={`/location/${item.placeId}`} 
+                                                    to={item.productId ? `/product/${item.productId}` : `/location/${item.placeId}`} 
                                                     className="mt-4 text-center bg-orange/20 hover:bg-orange/40 text-orange py-2 rounded-lg transition-all border border-orange/50 text-sm font-bold"
                                                 >
                                                     Voir le détail
@@ -514,7 +514,7 @@ const Profile = () => {
                             ) : (
                                 <div className="bg-black/20 p-10 rounded-2xl border border-dashed border-white/10 flex flex-col items-center gap-4">
                                     <p className="text-gray-400 text-lg">Votre wishlist est vide.</p>
-                                    <Link to="/boutique" className="text-orange hover:underline font-medium">Parcourir le catalogue</Link>
+                                    <Link to="/market" className="text-orange hover:underline font-medium">Parcourir le catalogue</Link>
                                 </div>
                             )}
                         </div>

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { API_ROOT, IMAGE_URL } from '../constants/apiConstant';
 import { AuthContext } from '../contexts/AuthContext';
 import ButtonLoader from '../components/Loader/ButtonLoader';
-import { FaChevronLeft, FaEdit, FaShoppingCart } from 'react-icons/fa';
+import { FaChevronLeft, FaEdit, FaShoppingCart, FaHeart, FaRegHeart } from 'react-icons/fa';
 import AddToCartModal from '../components/UI/AddToCartModal';
 
 const ProductDetail = () => {
@@ -19,6 +19,8 @@ const ProductDetail = () => {
     
     // 2. State pour contrôler l'affichage de la modale
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isFavorite, setIsFavorite] = useState(false);
+    const [etatFavorisId, setEtatFavorisId] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -31,8 +33,8 @@ const ProductDetail = () => {
                     const etatsRes = await axios.get(`${API_ROOT}/api/etats`, authConfig);
                     const etats = etatsRes.data.member || etatsRes.data['hydra:member'] || [];
 
+                    // Pour le panier
                     const etatCible = etats.find(e => e.label.toLowerCase().includes("attente"));
-
                     if (etatCible) {
                         const cartRes = await axios.get(
                             `${API_ROOT}/api/paniers?user=/api/users/${user.id}&etat=${etatCible['@id']}`,
@@ -43,6 +45,14 @@ const ProductDetail = () => {
                             setCart(cartsData[0]); 
                         }
                     }
+
+                    // Pour la wishlist
+                    const favStatus = etats.find(e => e.label === 'Favoris');
+                    if (favStatus) setEtatFavorisId(favStatus.id);
+
+                    const wishRes = await axios.get(`${API_ROOT}/api/wishlist/me`, authConfig);
+                    const isFav = wishRes.data.some(item => Number(item.productId) === Number(id));
+                    setIsFavorite(isFav);
                 }
             } catch (error) {
                 console.error("Erreur API :", error);
@@ -54,6 +64,22 @@ const ProductDetail = () => {
 
         fetchData();
     }, [id, user]);
+
+    const handleToggleWishlist = async () => {
+        if (!user?.token) return navigate('/login');
+
+        try {
+            const config = { headers: { Authorization: `Bearer ${user.token}` } };
+            const response = await axios.post(
+                `${API_ROOT}/api/wishlist/toggle/product/${id}`, 
+                { etatId: etatFavorisId }, 
+                config
+            );
+            setIsFavorite(response.data.isFavorite);
+        } catch (err) {
+            console.error("Erreur lors du toggle wishlist:", err);
+        }
+    };
 
     const handleAddToCart = async () => {
         if (!user || !user.token) {
@@ -184,11 +210,20 @@ const ProductDetail = () => {
                         <span className="text-orange font-bold uppercase tracking-wider text-sm mb-2">{product.brand || "LaRoueLibre"}</span>
                         <div className="flex justify-between items-start">
                             <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
-                            {isAdmin && (
-                                <Link to={`/product/edit/${product.id}`} className="bg-orange text-black p-3 rounded-full hover:scale-110 transition shadow-lg">
-                                    <FaEdit size={20} />
-                                </Link>
-                            )}
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={handleToggleWishlist}
+                                    className="p-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full hover:scale-110 transition-all"
+                                    title="Ajouter à la wishlist"
+                                >
+                                    {isFavorite ? <FaHeart className="text-red-500 text-2xl" /> : <FaRegHeart className="text-white text-2xl" />}
+                                </button>
+                                {isAdmin && (
+                                    <Link to={`/product/edit/${product.id}`} className="bg-orange text-black p-3 rounded-full hover:scale-110 transition shadow-lg">
+                                        <FaEdit size={20} />
+                                    </Link>
+                                )}
+                            </div>
                         </div>
                         
                         <p className="text-3xl font-bold text-orange mb-2">{product.price / 100} €</p>

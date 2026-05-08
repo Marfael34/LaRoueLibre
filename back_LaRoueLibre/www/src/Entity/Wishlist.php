@@ -34,9 +34,14 @@ class Wishlist
     private ?User $user = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['wishlist:read', 'wishlist:write'])]
     private ?Places $place = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['wishlist:read', 'wishlist:write'])]
+    private ?Products $product = null;
 
     #[ORM\ManyToOne(inversedBy: 'wishlists')]
     #[ORM\JoinColumn(nullable: false)]
@@ -76,6 +81,18 @@ class Wishlist
     public function setPlace(?Places $place): static
     {
         $this->place = $place;
+
+        return $this;
+    }
+
+    public function getProduct(): ?Products
+    {
+        return $this->product;
+    }
+
+    public function setProduct(?Products $product): static
+    {
+        $this->product = $product;
 
         return $this;
     }

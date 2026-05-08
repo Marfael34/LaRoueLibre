@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Places;
 use App\Entity\Wishlist;
+use App\Entity\Products;
 use App\Repository\EtatRepository;
 use App\Repository\WishlistRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,17 +26,31 @@ class WishlistController extends AbstractController
 
         $data = array_map(function(Wishlist $item) {
             $place = $item->getPlace();
-            return [
+            $product = $item->getProduct();
+            
+            $res = [
                 'id' => $item->getId(),
-                'placeId' => $place->getId(),
-                'placeName' => $place->getName(),
-                'placeDescription' => $place->getDescription(),
-                'placeImg' => $place->getPath(),
-                'placeDifficulty' => $place->getDifficulty(),
-                'placeId' => $item->getPlace()->getId(),
                 'etatId' => $item->getEtat()->getId(),
                 'createdAt' => $item->getCreatedAt() ? $item->getCreatedAt()->format('d/m/Y H:i') : null,
             ];
+
+            if ($place) {
+                $res['placeId'] = $place->getId();
+                $res['placeName'] = $place->getName();
+                $res['placeDescription'] = $place->getDescription();
+                $res['placeImg'] = $place->getPath();
+                $res['placeDifficulty'] = $place->getDifficulty();
+            }
+
+            if ($product) {
+                $res['productId'] = $product->getId();
+                $res['productName'] = $product->getTitle();
+                $res['productDescription'] = $product->getDescription();
+                $res['productImg'] = $product->getImagePath();
+                $res['productPrice'] = $product->getPrice();
+            }
+
+            return $res;
         }, $wishlistItems);
 
         return new JsonResponse($data, Response::HTTP_OK);
@@ -64,7 +79,36 @@ class WishlistController extends AbstractController
         $new->setUser($user);
         $new->setPlace($place);
         $new->setEtat($etat);
-        // La date est généralement gérée dans le constructeur de l'entité Wishlist
+        
+        $em->persist($new);
+        $em->flush();
+
+        return new JsonResponse(['isFavorite' => true]);
+    }
+
+    #[Route('/toggle/product/{id}', name: 'toggle_product', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function toggleProduct(Products $product, EntityManagerInterface $em, WishlistRepository $repo, EtatRepository $etatRepo): JsonResponse 
+    {
+        $user = $this->getUser();
+        $item = $repo->findOneBy(['user' => $user, 'product' => $product]);
+
+        if ($item) {
+            $em->remove($item);
+            $em->flush();
+            return new JsonResponse(['isFavorite' => false]);
+        }
+
+        $etat = $etatRepo->findOneBy(['label' => 'Favoris']);
+        
+        if (!$etat) {
+            return new JsonResponse(['error' => 'État Favoris non trouvé'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $new = new Wishlist();
+        $new->setUser($user);
+        $new->setProduct($product);
+        $new->setEtat($etat);
         
         $em->persist($new);
         $em->flush();
