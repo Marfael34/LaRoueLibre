@@ -1,0 +1,143 @@
+Cahier des Charges : Application Web de Gestion de Magasin de vélo et Services Associés
+
+1. Contexte du Projet
+L’objectif du projet est de concevoir et de développer une application web permettant de
+gérer un magasin de vélo, une boutique en ligne pour la vente de ces articles, ainsi
+que des services additionnels comme la recommandation de lieux à faire à vélo et
+l’inscription à des compétitions locales. Cette application sera réalisée en Symfony
+et React pour le backend/frontend et utilisera MariaDB comme base de données.
+
+2. Objectifs du Projet
+L’application devra répondre aux besoins suivants :
+• Gestion des articles de vélo : gestion des produits du magasin (création, modification, suppression).
+
+• Gestion des articles de pièces détachées pour les vélos : gestion des produits du magasin (création, modification, suppression).
+
+• Gestion des boutiques en ligne : permettre aux utilisateurs de naviguer et d’acheter des articles en ligne.
+
+• Gestion des clients : création et gestion des profils clients (authentification, informations personnelles, historique d’achats).
+
+• Gestion des lieux recommandés : création et gestion des lieux recommandés (création, modification, suppression).
+
+• Gestion des commandes : permettre aux clients de commander des articles en ligne et suivre leurs commandes.
+
+• Demande de licence : permettre aux utilisateurs de faire une demande de licence de BMX en ligne.
+
+• Inscriptions à des compétitions locales : permettre aux utilisateurs de s’inscrire à des compétitions de BMX, VTT ou autre organisées par le magasin.
+
+• Tableau de bord admin : permettre à l'administrateur de visualiser et de gérer les produits, les commandes, les compétitions, et les licences.
+
+3. Périmètre Fonctionnel
+1. Gestion des produits
+   o Création, modification, suppression de produits.
+   o Catégorisation des articles (vélos, pièces détachées).
+   o Catégorisation des vélos (BMX, VTT, etc.).
+   o Gestion du stock (quantité, réapprovisionnement).
+   o Affichage des produits avec détails (images, prix, description, disponibilité).
+
+2. Gestion de la boutique en ligne
+   o Navigation par catégorie de produits.
+   o Filtrage et recherche des articles.
+   o Ajout d’articles au panier et gestion du panier.
+   o Paiement sécurisé via une passerelle de paiement (ex: Stripe, PayPal).
+   o Suivi des commandes (consultation de l’historique des commandes, état des commandes).
+
+3. Gestion des clients
+   o Inscription et connexion (par email et mot de passe).
+   o Gestion des informations personnelles (nom, prénom, adresse, téléphone, etc.).
+   o Consultation de l'historique des commandes et des demandes de permis/licences.
+
+4. Gestion de lieux recommandés
+   o Formulaire de création (nom, description, coordonnées, distance, dénivelé, difficulté, type de sol).
+   o Affichage des lieux disponibles.
+   o Ajout d’une wishlist des lieux recommandés.
+
+5. Demande de licence BMX
+   o Formulaire de demande de licence.
+   o Gestion des statuts de la demande (en attente, approuvé, rejeté).
+   o Notification par email une fois la demande traitée.
+
+6. Inscription aux compétitions locales
+   o Affichage des compétitions disponibles (nom, date, lieu, description).
+   o Formulaire d'inscription en ligne pour chaque compétition.
+   o Envoi de confirmation et suivi de la participation.
+
+7. Tableau de bord administrateur
+   o Gestion des produits, compétitions, permis, lieux et commandes.
+   o Visualisation des statistiques du magasin (ventes, inscriptions aux compétitions, demandes de permis).
+
+4. Architecture Technique
+1. Frontend
+   o Framework : React.
+   o Design Responsive (adapté aux mobiles, tablettes et ordinateurs).
+2. Backend
+   o Framework : Symfony.
+   o Modules utilisés :
+     - API Platform
+     - Fixtures
+     - Doctrine
+     - Maker Bundle
+     - Security Core
+     - JWT Token
+3. Base de Données
+   o Base de données relationnelle : MariaDB.
+   o Tables principales :
+     - Utilisateurs (informations de connexion et profils clients).
+     - Produits (informations détaillées sur les articles).
+     - Commandes (liées aux utilisateurs et aux produits).
+     - Licence BMX (liées aux utilisateurs).
+     - Compétition (inscriptions liées aux utilisateurs).
+4. Gestion des paiements
+   o Intégration d'une passerelle de paiement comme Stripe ou PayPal pour la gestion des transactions.
+5. Sécurité
+   o Authentification par JWT (JSON Web Token) pour les clients et administrateurs.
+   o Cryptage des mots de passe avec BCrypt.
+   o Sécurisation des endpoints critiques (gestion des produits, commandes, permis).
+
+5. Contraintes et Exigences Techniques
+• Performance : L’application doit supporter un trafic moyen à élevé sans altérer les performances.
+
+• Sécurité : Les données personnelles et les transactions financières doivent être protégées.
+
+• Compatibilité : L’application doit être compatible avec les principaux navigateurs web (Chrome, Firefox, Safari).
+
+• Scalabilité : Prévoir une architecture scalable pour accueillir une augmentation du nombre d’utilisateurs.
+
+6. Livrables
+1. Application Web fonctionnelle :
+   o Frontend et Backend.
+   o Documentation utilisateur et administrateur.
+
+2. Documentation technique :
+   o Schéma de la base de données.
+   o Manuel d’installation et de déploiement.
+   o Documentation API (si applicable).
+
+7. Planification et Délais
+1. Phase de conception : 2 semaines.
+
+2. Développement frontend & backend : 6 à 8 semaines.
+
+3. Tests unitaires et intégration : 2 semaines.
+
+4. Phase de validation et déploiement : 1 à 2 semaines.
+
+8. Responsabilités
+• Chef de projet : S'assurer du bon déroulement du projet, respect des délais et des objectifs.
+
+• Développeurs : Développement du frontend et backend selon les spécifications.
+
+• Administrateur système : Gestion du déploiement, sécurité et performance du serveur.
+
+9. Technologies Utilisées
+• Langage backend : Symfony.
+
+• Base de données : MariaDB.
+
+• Front-office : React.
+
+• Authentification & Sécurité : JWT.
+
+• Serveur d’hébergement : Docker (optionnel) pour une solution containerisée, ou un serveur traditionnel.
+
+• Gestion des paiements : Stripe ou PayPal.
